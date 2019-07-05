@@ -57,7 +57,7 @@ price | 訂單金額 | V |
 email | 付款人電子信箱 | V |
 payment_methods | 付款方式，請使用[]，例如 `payment_methods: [:credit_card, :cvs]` <br><br> credit_card或credit：信用卡 <br> webatm：WEB ATM <br> vacc：ATM 轉帳 <br> cvs: 超商代碼 <br> barcode：超商條碼 <br> android_pay：Google Pay <br> samsung_pay：Samsung Pay <br> unionpay：銀聯卡 <br> p2g：ezPay <br> credit_red：信用卡紅利 <br><br> inst_flag：信用卡分期，請使用{}帶入值，如 `payment_methods: [:credit, :cvs, {inst_flag: "分期數"}]`。 <br> 1：開啟所有分期數。<br> 可分3,6,12,18,24,30期。 <br> 同時開啟多個期數時，使用`,`分隔，如：`{inst_flag: "3,6,12"}`。| V |
 login_required | 藍新金流會員 <br><br>1：需要登入藍新會員 <br> 0：不需登入藍新金流會員 | V | 0 
-merchant_id | 商店代號 | V | `config/initializers/newebpay.rb` 中的 `merchant_id` 
+merchant_id | 商店代號 | | `config/initializers/newebpay.rb` 中的 `merchant_id` 
 trade_limit | 交易限制秒數 <br><br> 數字限60 ~ 900。 | | 
 expire_date | 繳費有效期限 <br><br> 日期Ymd，如 20150125。 <br> 上限180天。 | | 7天 
 email_editable | 是否可修改Email <br><br> 1：可修改 <br> 0：不可修改 | | 0 
@@ -127,7 +127,7 @@ period_point | 週期授權時間點 <br><br> 當`period_type`為`daily`時，�
 period_times | 授權期數 （執行交易次數）<br><br>若期數大於信用卡到期日，則自動以信用卡到期日為最終期數。 | V | 99
 check_type | 檢查模式 <br><br> 1：立刻執行10元授權。<br>若成功，將立即自動取消授權，付款人將不會被扣款。<br>若失敗，則該筆委託 單將自動取消。 <br><br> 2：立即執行委託金額授權<br><br> 3：不檢查 <br><br>詳細說明見原文件| V | 1 
 email | 付款人電子信箱 | V |
-merchant_id | 商店代號 | V | `config/initializers/newebpay.rb` 中的 `merchant_id`
+merchant_id | 商店代號 | | `config/initializers/newebpay.rb` 中的 `merchant_id`
 email_editable | 是否可修改Email<br><br> 1：可修改<br> 0：不可修改 | | 0 
 comment | 備註 <br> 上限300字 | |
 payment_info | 是否開放填寫付款人資訊 <br><br> Y：是<br> N：否 | | N
@@ -164,15 +164,15 @@ config.periodical_notify_callback do |newebpay_response|
 版本：1.1 
 
 ```ruby
-# controller
-query_trade_info(price: "訂單金額", order_number: "訂單編號").result
+# controller、model
+Newebpay::QueryTrade.new(price: "訂單金額", order_number: "訂單編號").result
 ```
 
 參數 | 說明 | 必填 | 預設 
 --- | --- | --- | ---
 order_number | 商店訂單編號 <br><br>限英、數、`_`，上限20字。 <br> 同商店中不可重複。 | V |
 price | 訂單金額 | V |
-merchant_id | 商店代號 | V | `config/initializers/newebpay.rb` 中的 `merchant_id`
+merchant_id | 商店代號 | | `config/initializers/newebpay.rb` 中的 `merchant_id`
 
 - 詳細說明參見[原文件](https://www.newebpay.com/website/Page/content/download_api)，部分參數名稱與預設值與原文件不同。
 - 原文件其他的必填欄位會自動產生，不需處理。
@@ -184,7 +184,7 @@ merchant_id | 商店代號 | V | `config/initializers/newebpay.rb` 中的 `merch
 ```ruby 
 	#controller
 	#範例
-	@response = query_trade_info(price: "訂單金額", order_number: "訂單編號")
+	@response = Newebpay::QueryTrade.new(price: "訂單金額", order_number: "訂單編號")
 	@response.success? #查詢是否成功
 	@response.valid? #來源是否為藍新
 
@@ -203,14 +203,14 @@ merchant_id | 商店代號 | V | `config/initializers/newebpay.rb` 中的 `merch
 
 ```ruby 
 # controller
-cancel_auth(price: "取消授權金額", number_type: "1", order_number: "訂單編號/交易序號")
+cancel_auth(price: "取消授權金額", order_number: "訂單編號/交易序號")
 ```
 參數 | 說明 | 必填 | 預設 
 --- | --- | --- | ---
-number_type | 單號類別<br><br>1：使用訂單編號<br>2：金流交易序號 | V | 1 
+number_type | 單號類別<br><br>1：使用訂單編號<br>2：金流交易序號 | | 1 
 order_number | 訂單編號/交易序號 <br><br>若`number_type`為`1`，請輸入商店訂單編號<br>若`number_type`為`2`，請輸入藍新金流交易序號。 | V | 
 price | 取消授權金額 | V | 
-merchant_id | 商店代號 | V | `config/initializers/newebpay.rb` 中的 `merchant_id`
+merchant_id | 商店代號 | | `config/initializers/newebpay.rb` 中的 `merchant_id`
 
 - 詳細說明參見[原文件](https://www.newebpay.com/website/Page/content/download_api)，部分參數名稱與預設值與原文件不同。
 - 原文件其他的必填欄位會自動產生，不需處理。
@@ -266,18 +266,18 @@ config.cancel_auth_notify_callback do |newebpay_response|
 - 取消退款需為發動退款當日的晚上九點前
 
 ```ruby 
-# controller
-close_fund(price: "請退款金額", number_type: "1", order_number: "訂單編號/交易序號", close_type: :request)
+# controller、model
+Newebpay::CloseFund.new(price: "請退款金額", order_number: "訂單編號/交易序號", close_type: :request)
 ```
 
 參數 | 說明 | 必填 | 預設 
 --- | --- | --- | ---
-number_type | 單號類別<br><br>1：使用訂單編號<br>2：金流交易序號 | V | 1 
+number_type | 單號類別<br><br>1：使用訂單編號<br>2：金流交易序號 | | 1 
 order_number | 訂單編號/交易序號 <br><br>若`number_type`為`1`，請輸入商店訂單編號<br>若`number_type`為`2`，請輸入藍新金流交易序號。 | V | 
 price | 請退款金額 | V | 
 close_type | 請款或退款<br><br>request：請款<br>refund：退款 | V | | 
 abort | 取消請款或退款<br><br>true：取消請款或退款 | | |
-merchant_id | 商店代號 | V | `config/initializers/newebpay.rb` 中的 `merchant_id`
+merchant_id | 商店代號 | | `config/initializers/newebpay.rb` 中的 `merchant_id`
 
 - 詳細說明參見[原文件](https://www.newebpay.com/website/Page/content/download_api)，部分參數名稱與預設值與原文件不同。
 - 原文件其他的必填欄位會自動產生，不需處理。
@@ -289,7 +289,7 @@ merchant_id | 商店代號 | V | `config/initializers/newebpay.rb` 中的 `merch
 ```ruby 
 	#controller
 	#範例
-	@response = close_fund(price: "請退款金額", number_type: "1", order_number: "訂單編號/交易序號", close_type: :request)
+	@response = Newebpay::CloseFund.new(price: "請退款金額", order_number: "訂單編號/交易序號", close_type: :request)
 	@response.success? #請退款是否成功
 	@response.message
 
@@ -317,7 +317,7 @@ class: 'btn btn-success', id: 'donation' %>
 order_number | 捐款單號 <br><br>限英、數、`_`，上限20字。 <br> 同商店中不可重複。 | V |
 description | 捐款說明 <br><br>上限50字。 | V |
 price | 金額 | V |
-merchant_id | 商店代號 | V | `config/initializers/newebpay.rb` 中的 `merchant_id`
+merchant_id | 商店代號 | | `config/initializers/newebpay.rb` 中的 `merchant_id`
 return_url | 完成捐款返回收款單位網址 <br><br>若不設定，則不顯示返回收款單位頁面按鈕，使用者將停留在藍新金流捐款完成頁面 | | 
 payment_methods | 付款方式，請使用[]，例如 `payment_methods: [:credit_card, :cvs]` <br><br> credit_card或credit：信用卡 <br> webatm：WEB ATM <br> vacc：ATM 轉帳 <br> cvs: 超商代碼 <br> barcode：超商條碼 | | 全部啟用 
 expire_date | 捐款有效期限，非即時交易的捐款有效天數 <br><br> 純數字，上限180。 | | 7 
@@ -372,6 +372,17 @@ Newebpay.get_error_message(error_code)
 ```ruby 
 Newebpay.bank(bank_code)
 ```
+
+## ChangeLog
+
+Version 1.1
+---
+- Timestamp由`Time.now.to_i`改為`Time.current.to_i`
+- 交易查詢由`query_trade_info`改用`Newebpay::QueryTrade.new`
+- 信用卡請退款由`close_fund`改用`Newebpay::CloseFund.new`
+- Readme文字修正
+  - 信用卡取消授權與信用卡請退款的 `number_type` 非必填，預設為1
+  - 所有商店代號非必填，預設`config/initializers/newebpay.rb` 中的 `merchant_id`
 
 ## License
 

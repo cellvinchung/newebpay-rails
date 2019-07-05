@@ -4,46 +4,29 @@ require 'http'
 module Newebpay
 	class QueryTrade
 		include AttrKeyHelper
-		REQUIRED_ATTRS = %w(TimeStamp Version MerchantOrderNo RespondType).freeze
 		attr_reader :result, :status
-		def initialize(attrs)
-	        unless attrs.is_a? Hash
-	          raise ArgumentError, "When initializing #{self.class.name}, you must pass a hash as an argument."
-	        end
+		def initialize(options)
+	        raise ArgumentError, "When initializing #{self.class.name}, you must pass a hash as an argument." unless options.is_a? Hash
+	        raise ArgumentError, 'Missing required argument: order_number.' unless options[:order_number]
+	      	raise ArgumentError, 'Missing required argument: price.' unless options[:price]
+	      	merchant_id = options[:merchant_id] || Newebpay.config.merchant_id
+		    
+		    @attrs = options.except(:price, :order_number, :merchant_id)
 
-	        @attrs = {}
-	        missing_attrs = REQUIRED_ATTRS.map(&:clone)
+		    @attrs["MerchantID"] = merchant_id
+		    @attrs["Amt"] = options[:price]
+		    @attrs["MerchantOrderNo"] = options[:order_number]
+		    @attrs["Version"] = version
+		    @attrs["TimeStamp"] = Time.current.to_i
+		    @attrs["RespondType"] = "JSON"
+		    @attrs['CheckValue'] = check_value
 
-	        attrs.each_pair do |k, v|
-	          key = k.to_s
-	          value = v.to_s
-	          missing_attrs.delete(key)
-	          @attrs[key] = value
-	        end
-	        
-	        if @attrs['Version'].nil?
-	          @attrs['Version'] = version
-	          missing_attrs.delete('Version')
-	        end
-
-	        if @attrs['TimeStamp'].nil?
-	          @attrs['TimeStamp'] = Time.now.to_i
-	          missing_attrs.delete('TimeStamp')
-	        end
-	        if @attrs['RespondType'].nil?
-	          @attrs['RespondType'] = "JSON"
-	          missing_attrs.delete('RespondType')
-	        end
-	        @attrs['CheckValue'] = check_value
-
-	        raise ArgumentError, "The required attrs: #{missing_attrs.map { |s| "'#{s}'" }.join(', ')} #{missing_attrs.count > 1 ? 'are' : 'is'} missing." unless missing_attrs.count.zero?
-
-	        response = JSON.parse(HTTP.post(Newebpay.config.query_trade_url, form: @attrs).body.to_s)
+		    response = JSON.parse(HTTP.post(Newebpay.config.query_trade_url, form: @attrs).body.to_s)
 	        @status = response["Status"]
 
 	        result = response["Result"]
 	        @result = Result.new(result)
-	      end
+		end
 	      def success?
 		        @status && @status == 'SUCCESS'
 		  end

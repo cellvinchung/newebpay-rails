@@ -27,7 +27,7 @@ module Newebpay
 	        end
 
 	        if @attrs['TimeStamp'].nil?
-	          @attrs['TimeStamp'] = Time.now.to_i
+	          @attrs['TimeStamp'] = Time.current.to_i
 	          missing_attrs.delete('TimeStamp')
 	        end
 	        if @attrs['RespondType'].nil?

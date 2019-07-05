@@ -4,42 +4,45 @@ require 'http'
 module Newebpay
 	class CloseFund
 		include AttrKeyHelper
-		REQUIRED_ATTRS = %w(TimeStamp Version RespondType).freeze
+		# REQUIRED_ATTRS = %w(TimeStamp Version RespondType).freeze
 		attr_reader :result, :status, :message
-		def initialize(attrs)
-			unless attrs.is_a? Hash
-	          raise ArgumentError, "When initializing #{self.class.name}, you must pass a hash as an argument."
-	        end
+		def initialize(options)
+			raise ArgumentError, "When initializing #{self.class.name}, you must pass a hash as an argument." unless options.is_a? Hash
+			raise ArgumentError, 'Missing required argument: price.' unless options[:price]
+	    	raise ArgumentError, 'Missing required argument: order_number.' unless options[:order_number]
+	    	raise ArgumentError, 'Missing required argument: close_type.' unless options[:close_type]
+	    	raise ArgumentError, 'close_type should be :request or :refund.' if [:request, :refund].exclude?(options[:close_type].to_sym)
+	    	merchant_id = options[:merchant_id] || Newebpay.config.merchant_id
+	      	@attrs = options.except(:price, :order_number, :number_type, :merchant_id, :abort, :close_type)
 
-	        @attrs = {}
-	        missing_attrs = REQUIRED_ATTRS.map(&:clone)
+	      	@attrs["Amt"] = options[:price].to_s
+	      	@attrs["IndexType"] = options[:number_type] || "1"
+	      	@attrs["Cancel"] = "1" if options[:abort]
 
-	        attrs.each_pair do |k, v|
-	          key = k.to_s
-	          value = v.to_s
-	          missing_attrs.delete(key)
-	          @attrs[key] = value
-	        end
-	        
-	        if @attrs['Version'].nil?
-	          @attrs['Version'] = version
-	          missing_attrs.delete('Version')
-	        end
+		    case @attrs["IndexType"].to_s 
+		    when "1"
+		    	@attrs["MerchantOrderNo"] = options[:order_number].to_s
+		    when "2"
+		    	@attrs["TradeNo"] = options[:order_number].to_s
+		    else
+		    	raise ArgumentError, 'number_type should be 1 or 2.'
+		    end
 
-	        if @attrs['TimeStamp'].nil?
-	          @attrs['TimeStamp'] = Time.now.to_i
-	          missing_attrs.delete('TimeStamp')
-	        end
-	        if @attrs['RespondType'].nil?
-	          @attrs['RespondType'] = "JSON"
-	          missing_attrs.delete('RespondType')
-	        end
-	        raise ArgumentError, "The required attrs: #{missing_attrs.map { |s| "'#{s}'" }.join(', ')} #{missing_attrs.count > 1 ? 'are' : 'is'} missing." unless missing_attrs.count.zero?
+	      	case options[:close_type].to_sym
+	      	when :request
+	      		@attrs["CloseType"] = "1"
+	      	when :refund
+	      		@attrs["CloseType"] = "2"
+	      	end
 
-	        @format_attrs = {}
-	        @format_attrs["MerchantID_"] = @attrs["MerchantID"]
-	        @attrs.except!("MerchantID")
+	      	@attrs['Version'] = version
+	      	@attrs['TimeStamp'] = Time.current.to_i
+	      	@attrs['RespondType'] = "JSON"
+
+	      	@format_attrs = {}
+	        @format_attrs["MerchantID_"] = merchant_id
 	        @format_attrs["PostData_"] = Newebpay::NewebpayHelper.encrypt_data(URI.encode_www_form(@attrs))
+
 	        response = JSON.parse(HTTP.post(Newebpay.config.close_fund_url, form: @format_attrs).body.to_s)
 	        @status = response["Status"]
 	        @message = response["Message"]
@@ -47,6 +50,7 @@ module Newebpay
 
 	        @result = Result.new(result)
 		end
+		
 		def success?
 		    @status && @status == 'SUCCESS'
 		end
