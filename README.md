@@ -10,7 +10,7 @@
 Gemfile 加上:
 
 ```ruby
-gem 'newebpay-rails', "~> 1.0"
+gem 'newebpay-rails', git: "https://github.com/cellvinchung/newebpay-rails.git"
 ```
 
 執行:
