@@ -74,7 +74,7 @@ module Newebpay
 
 	      if [80, 443].include?(request.port) && Newebpay.config.donation_notify_callback
 	        form.notify_url =
-	          Newebpay::Engine.routes.url_helpers.donation_notify_callbacks_url(host: request.host, port: request.port)
+	          Newebpay::Engine.routes.url_helpers.donation_notify_callbacks_url(host: request.base_url)
 	      end
 
 	      ["CREDIT", "WEBATM", "VACC", "CVS", "BARCODE"].each do |default_payment|

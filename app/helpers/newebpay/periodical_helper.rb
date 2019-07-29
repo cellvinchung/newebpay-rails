@@ -68,12 +68,12 @@ module Newebpay
       form = Newebpay::Periodical::PeriodicalForm.new(form_attributes)
       
       form.return_url =
-        Newebpay::Engine.routes.url_helpers.periodical_callbacks_url(host: request.host, port: request.port)
+        Newebpay::Engine.routes.url_helpers.periodical_callbacks_url(host: request.base_url)
 
 
       if [80, 443].include?(request.port) && Newebpay.config.periodical_notify_callback
         form.notify_url =
-          Newebpay::Engine.routes.url_helpers.periodical_notify_callbacks_url(host: request.host, port: request.port)
+          Newebpay::Engine.routes.url_helpers.periodical_notify_callbacks_url(host: request.base_url)
       end
 
       newebpay_periodical_form_for(

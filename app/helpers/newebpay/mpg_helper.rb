@@ -60,16 +60,16 @@ module Newebpay
       
       form = Newebpay::MPG::MPGForm.new(form_attributes)
 
-      form.return_url = Newebpay::Engine.routes.url_helpers.mpg_callbacks_url(host: request.host, port: request.port)
+      form.return_url = Newebpay::Engine.routes.url_helpers.mpg_callbacks_url(host: request.base_url)
 
       if [80, 443].include?(request.port) && Newebpay.config.payment_code_callback
         form.customer_url =
-          Newebpay::Engine.routes.url_helpers.payment_code_callbacks_url(host: request.host, port: request.port)
+          Newebpay::Engine.routes.url_helpers.payment_code_callbacks_url(host: request.base_url)
       end
 
       if [80, 443].include?(request.port) && Newebpay.config.notify_callback
         form.notify_url =
-          Newebpay::Engine.routes.url_helpers.notify_callbacks_url(host: request.host, port: request.port)
+          Newebpay::Engine.routes.url_helpers.notify_callbacks_url(host: request.base_url)
       end
 
       if options[:payment_methods].is_a? Array
