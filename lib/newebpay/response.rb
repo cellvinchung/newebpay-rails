@@ -58,7 +58,7 @@ module Newebpay
       end
     end
     class Result
-      include AttrKeyHelper
+      include ResponseAttrHepler
 
       def initialize(data)
         @data = data
