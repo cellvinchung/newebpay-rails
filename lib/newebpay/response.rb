@@ -1,4 +1,4 @@
-require 'newebpay/attr_key_helper'
+require 'newebpay/response_attr_helper'
 
 module Newebpay
   class Response

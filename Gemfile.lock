@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    newebpay-rails (1.0.0)
+    newebpay-rails (1.2.0)
       activerecord (>= 4.2, < 7)
       http (>= 4.1)
 
@@ -59,7 +59,7 @@ GEM
     crass (1.0.4)
     diff-lcs (1.3)
     docile (1.3.1)
-    domain_name (0.5.20180417)
+    domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     erubi (1.8.0)
     http (4.1.1)
@@ -86,7 +86,7 @@ GEM
       ngrok-tunnel (~> 2.0)
       rspec (>= 2.99)
     ngrok-tunnel (2.1.1)
-    nokogiri (1.10.3)
+    nokogiri (1.10.4)
       mini_portile2 (~> 2.4.0)
     poltergeist (1.18.1)
       capybara (>= 2.1, < 4)
@@ -169,4 +169,4 @@ DEPENDENCIES
   simplecov
 
 BUNDLED WITH
-   1.16.4
+   1.17.2
