@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["cellvinchung@gmail.com"]
 
   spec.summary       = %q{newebpay gem for ruby on rails (藍新金流)}
-  spec.description   = %q{Integrate Rails with newebpay (藍新金流), former spgateway (智付通).}
+  spec.description   = %q{Integrate Rails with newebpay (藍新金流).}
   spec.homepage      = "https://github.com/cellvinchung/newebpay-rails"
   spec.license       = "MIT"
 
@@ -32,13 +32,9 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 2.3"
+  spec.required_ruby_version = ">= 2.5"
   spec.add_dependency "http", ">= 4.1"
-  spec.add_dependency "activerecord", ">= 4.2", "< 7"
-  
-  spec.add_development_dependency "bundler", "~> 1.16"
-  spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_dependency "rails", ">= 5.0", "< 7"
   spec.add_development_dependency "rspec-rails"
   spec.add_development_dependency "capybara"
   spec.add_development_dependency "poltergeist"

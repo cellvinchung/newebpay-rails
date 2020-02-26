@@ -1,5 +1,5 @@
 module Newebpay
-	
+
 	class BankCodes
 		@@bank_codes = {
 			CathayBK: "國泰世華銀行",
@@ -13,9 +13,5 @@ module Newebpay
 		def self.bank_codes
 			@@bank_codes
 		end
-
-		# def self.get_error_message code
-		# 	@error_code[code]
-		# end
 	end
 end

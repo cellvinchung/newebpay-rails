@@ -2,20 +2,8 @@ module Newebpay
   class ApplicationController < ActionController::Base
     protect_from_forgery with: :null_session
     protect_from_forgery prepend: true
-    private
 
-    def newebpay_response
-      return @newebpay_response if @newebpay_response
-      if params["TradeInfo"].present?
-        @newebpay_response = Newebpay::Response.new(params["TradeInfo"])
-      elsif params["Period"].present?
-        @newebpay_response = Newebpay::Response.new(params["Period"])
-      else
-        return nil
-      end
-      # raise InvalidResponseError unless @newebpay_response.result.valid?
-      @newebpay_response
-    end
+    private
 
     class InvalidResponseError < StandardError
     end

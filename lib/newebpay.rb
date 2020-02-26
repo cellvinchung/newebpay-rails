@@ -1,5 +1,7 @@
-require "active_record"
-require "http"
+# frozen_string_literal: true
+
+require 'active_record'
+require 'http'
 
 require 'newebpay/version'
 require 'newebpay/config'
@@ -7,16 +9,25 @@ require 'newebpay/error_codes'
 require 'newebpay/bank_codes'
 require 'newebpay/engine'
 require 'newebpay/newebpay_helper'
-require 'newebpay/response'
-require 'newebpay/mpg/mpg_form'
-require 'newebpay/periodical/periodical_form'
-require 'newebpay/donation/donation_form'
-require 'newebpay/donation/donation_response'
-require 'newebpay/query_trade'
-require 'newebpay/cancel_auth'
-require 'newebpay/close_fund'
-require 'newebpay/controller_helper'
+require 'newebpay/mpg/form'
+require 'newebpay/mpg/response'
+require 'newebpay/periodical/form'
+require 'newebpay/periodical/response'
+require 'newebpay/donation/form'
+require 'newebpay/donation/response'
+require 'newebpay/query_trade/search'
+require 'newebpay/query_trade/response'
+require 'newebpay/cancel_auth/request'
+require 'newebpay/cancel_auth/response'
+require 'newebpay/close_fund/base'
+require 'newebpay/close_fund/refund'
+require 'newebpay/close_fund/request'
+require 'newebpay/close_fund/response'
 module Newebpay
+  def self.host
+    @host ||= ::Rails.application.routes.default_url_options[:host]
+  end
+
   def self.configure
     yield config
   end
@@ -24,11 +35,12 @@ module Newebpay
   def self.config
     @config ||= Config.new
   end
-  def self.get_error_message code
-		# @@error_codes ||= ErrorCodes.new
-		ErrorCodes.error_codes[code.to_sym]
+
+  def self.get_error_message(code)
+    ErrorCodes.error_codes[code.to_sym]
   end
+
   def self.bank(bank_code)
-  	BankCodes.bank_codes(bank_code.to_sym)
+    BankCodes.bank_codes(bank_code.to_sym)
   end
 end
