@@ -40,6 +40,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 2.5"
   spec.add_dependency "http", ">= 4.1"
   spec.add_dependency "rails", ">= 5.0", "< 7"
+  spec.add_dependency 'oj', '~> 3.10', '>= 3.10.14'
   spec.add_development_dependency "rspec-rails"
   spec.add_development_dependency "capybara"
   spec.add_development_dependency "poltergeist"

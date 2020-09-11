@@ -2,11 +2,11 @@
 
 module Newebpay::MPG
   class Response
-    attr_reader :status, :message, :trade_info, :trade_sha
+    attr_reader :status, :message, :trade_info, :trade_sha, :result
     def initialize(response_params)
-      raw_params = Newebpay::NewebpayHelper.decrypt_data(response_params)
+      raw_params = Newebpay::Helpers.decrypt_trade_info(response_params)
 
-      response_data = JSON.parse(raw_params)
+      response_data = Oj.load(raw_params)
       @status = response_data['Status']
       @message = response_data['Message']
       @trade_info = response_data['TradeInfo']

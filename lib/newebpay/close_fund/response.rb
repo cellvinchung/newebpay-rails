@@ -5,7 +5,7 @@ module Newebpay::CloseFund
     attr_reader :status, :message
 
     def initialize(response_params)
-      response_data = JSON.parse(response_params)
+      response_data = Oj.load(response_params)
 
       @status = response_data['Status']
       @message = response_data['Message']

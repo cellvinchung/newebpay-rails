@@ -2,11 +2,11 @@
 
 module Newebpay::Periodical
   class Response
-    attr_reader :status, :message
+    attr_reader :status, :message, :result
     def initialize(response_params)
-      raw_params = Newebpay::NewebpayHelper.decrypt_data(response_params)
+      raw_params = Newebpay::Helpers.decrypt_period(response_params)
 
-      response_data = JSON.parse(raw_params)
+      response_data = Oj.parse(raw_params)
       @status = response_data['Status']
       @message = response_data['Message']
       @result = response_data['Result']

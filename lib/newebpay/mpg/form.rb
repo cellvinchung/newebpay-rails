@@ -10,10 +10,6 @@ module Newebpay::MPG
       @attrs = {}
       @merchant_id = options[:merchant_id] || Newebpay.config.merchant_id
       parse_attr(options)
-
-      @attrs['Version'] = version
-      @attrs['TimeStamp'] = Time.now.to_i
-      @attrs['RespondType'] = 'JSON'
     end
 
     def form_attrs
@@ -26,15 +22,11 @@ module Newebpay::MPG
     end
 
     def trade_info
-      @trade_info ||= Newebpay::NewebpayHelper.encrypt_data(encode_url_params)
+      @trade_info ||= Newebpay::Helpers.create_trade_info(@attrs)
     end
 
     def trade_sha
-      @trade_sha ||= Newebpay::NewebpayHelper.sha256_encode_trade_info(trade_info)
-    end
-
-    def encode_url_params
-      URI.encode_www_form(attrs)
+      @trade_sha ||= Newebpay::Helpers.create_trade_sha(trade_info)
     end
 
     def version
@@ -44,29 +36,35 @@ module Newebpay::MPG
     private
 
     def parse_attr(options)
-      attrs[:MerchantID] = merchant_id
-      attrs[:MerchantOrderNo] = options[:order_number]
-      attrs[:ItemDesc] = options[:description]
-      attrs[:Amt] = options[:price]
-      attrs[:Email] = options[:email]
-      attrs[:CVSCOM] = options[:cvscom]
-      attrs[:LoginType] = options[:login_required] ? '1' : '0'
-      attrs[:LangType] = options[:locale] || 'zh-tw'
-      attrs[:TradeLimit] = options[:trade_limit]
-      attrs[:ExpireDate] = options[:expire_date]
-      attrs[:ClientBackURL] = options[:cancel_url]
-      attrs[:OrderComment] = options[:comment]
-      attrs[:EmailModify] = options[:email_editable] ? '1' : '0'
-      attrs[:InstFlag] = options[:inst_flag]
-      attrs[:ReturnURL] = Newebpay::Engine.routes.url_helpers.mpg_callbacks_url(host: Newebpay.host)
-      attrs[:CustomerURL] = Newebpay::Engine.routes.url_helpers.payment_code_callbacks_url(host: Newebpay.host) if Newebpay.config.payment_code_callback
-      attrs[:NotifyURL] = Newebpay::Engine.routes.url_helpers.notify_callbacks_url(host: Newebpay.host) if Newebpay.config.notify_callback
+      @attrs['Version'] = version
+      @attrs['TimeStamp'] = Time.now.to_i
+      @attrs['RespondType'] = 'JSON'
+      @attrs[:MerchantID] = merchant_id
+      @attrs[:MerchantOrderNo] = options[:order_number]
+      @attrs[:ItemDesc] = options[:description]
+      @attrs[:Amt] = options[:price]
+      @attrs[:Email] = options[:email]
+      @attrs[:CVSCOM] = options[:cvscom]
+      @attrs[:LoginType] = options[:login_required] ? '1' : '0'
+      if options[:locale].to_s != 'zh-tw'
+        @attrs[:LangType] = options[:locale]
+      end
+      @attrs[:TradeLimit] = options[:trade_limit]
+      @attrs[:ExpireDate] = options[:expire_date]
+      @attrs[:ClientBackURL] = options[:cancel_url]
+      @attrs[:OrderComment] = options[:comment]
+      @attrs[:EmailModify] = options[:email_editable] ? '1' : '0'
+      @attrs[:InstFlag] = options[:inst_flag]
+      @attrs[:OrderComment] = options[:order_comment]
+      @attrs[:ReturnURL] = Newebpay::Engine.routes.url_helpers.mpg_callbacks_url(host: Newebpay.host)
+      @attrs[:CustomerURL] = Newebpay::Engine.routes.url_helpers.payment_code_callbacks_url(host: Newebpay.host) if Newebpay.config.payment_code_callback
+      @attrs[:NotifyURL] = Newebpay::Engine.routes.url_helpers.notify_callbacks_url(host: Newebpay.host) if Newebpay.config.notify_callback
 
       options[:payment_methods].each do |payment_method|
         if payment_method == :credit_red
-          attrs[:CreditRed] = '1'
+          @attrs[:CreditRed] = '1'
         else
-          attrs[payment_method.upcase] = '1'
+          @attrs[payment_method.upcase] = '1'
         end
       end
     end

@@ -2,10 +2,11 @@
 
 module Newebpay::Donation
   class Response
+    SLICE_ATTRS = %w[Amt MerchantID MerchantOrderNo TradeNo]
     attr_reader :status, :message
 
     def initialize(response_params)
-      @response_data = JSON.parse(response_params.to_json)
+      @response_data = Oj.load(response_params.to_json)
 
       @status = @response_data['Status']
       @message = @response_data['Message']
@@ -28,11 +29,7 @@ module Newebpay::Donation
     end
 
     def expected_check_code
-      Newebpay::NewebpayHelper.sha256_encode(Newebpay.config.hash_key, Newebpay.config.hash_iv, check_data_raw)
-    end
-
-    def check_data_raw
-      @check_data_raw ||= URI.encode_www_form(@result.slice('Amt', 'MerchantID', 'MerchantOrderNo', 'TradeNo').sort)
+      Newebpay::Helpers.expected_check_code(@result.slice(*SLICE_ATTRS))
     end
   end
 end

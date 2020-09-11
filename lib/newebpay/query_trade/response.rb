@@ -2,9 +2,10 @@
 
 module Newebpay::QueryTrade
   class Response
-    attr_reader :status, :message
+    SLICE_ATTRS = %w[Amt MerchantID MerchantOrderNo TradeNo]
+    attr_reader :status, :message, :result
     def initialize(response_params)
-      response_data = JSON.parse(response_params)
+      response_data = Oj.load(response_params)
       @status = response_data['Status']
       @message = response_data['Message']
       @result = response_data['Result']
@@ -25,11 +26,7 @@ module Newebpay::QueryTrade
     end
 
     def expected_check_code
-      Newebpay::NewebpayHelper.create_check_code(check_data_raw)
-    end
-
-    def check_data_raw
-      @check_data_raw ||= URI.encode_www_form(@result.slice('Amt', 'MerchantID', 'MerchantOrderNo', 'TradeNo').sort)
+      Newebpay::Helpers.query_check_code(@result.slice(*SLICE_ATTRS))
     end
   end
 end

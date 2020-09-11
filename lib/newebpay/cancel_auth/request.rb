@@ -28,11 +28,7 @@ module Newebpay::CancelAuth
     end
 
     def trade_info
-      @trade_info ||= Newebpay::NewebpayHelper.encrypt_data(encode_url_params)
-    end
-
-    def encode_url_params
-      URI.encode_www_form(attrs)
+      @trade_info ||= Newebpay::Helpers.create_trade_info(attrs)
     end
 
     def version
@@ -44,7 +40,6 @@ module Newebpay::CancelAuth
     def parse_attr(options)
       attrs['Amt'] = options[:price]
       attrs['IndexType'] = options[:number_type] || '1'
-      attrs['NotifyURL'] = Newebpay::Engine.routes.url_helpers.cancel_auth_notify_callbacks_url(host: Newebpay.host) if  Newebpay.config.cancel_auth_notify_callback
 
       case attrs['IndexType'].to_s
       when '1'

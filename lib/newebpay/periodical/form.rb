@@ -25,11 +25,7 @@ module Newebpay::Periodical
     end
 
     def trade_info
-      @trade_info ||= Newebpay::NewebpayHelper.encrypt_data(encode_url_params)
-    end
-
-    def encode_url_params
-      URI.encode_www_form(attrs)
+      @trade_info ||= Newebpay::Helpers.create_trade_info(attrs)
     end
 
     def version

@@ -5,6 +5,7 @@ module Newebpay::Donation
     attr_accessor :attrs, :merchant_id, :donation_url
     REQUIRED_ATTRS = %i[order_number description price].freeze
     PAYMENT_METHODS = %i[credit webatm vacc cvs barcode].freeze
+    SLICE_ATTRS = %w[Amt MerchantID MerchantOrderNo TimeStamp Version]
 
     def initialize(donation_url, options)
       @attrs = {}
@@ -25,11 +26,7 @@ module Newebpay::Donation
     end
 
     def check_value
-      @check_value ||= Newebpay::NewebpayHelper.sha256_encode(Newebpay.config.hash_key, Newebpay.config.hash_iv, check_value_raw)
-    end
-
-    def check_value_raw
-      URI.encode_www_form(attrs.slice('Amt', 'MerchantID', 'MerchantOrderNo', 'TimeStamp', 'Version').sort)
+      @check_value ||= Newebpay::Helpers.create_check_value(attrs.slice(*SLICE_ATTRS))
     end
 
     def version
