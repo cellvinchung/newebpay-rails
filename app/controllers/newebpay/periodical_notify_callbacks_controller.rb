@@ -7,7 +7,7 @@ module Newebpay
     skip_before_action :verify_authenticity_token
 
     def newebpay_response
-      @newebpay_response ||= Newebpay::MPG::Response.new(params['Period'])
+      @newebpay_response ||= Newebpay::Periodical::Response.new(params['Period'])
     end
 
     def proceed
