@@ -13,7 +13,6 @@ module Newebpay
       encode_attrs = URI.encode_www_form(attrs)
       encrypt(key, iv, encode_attrs)
     end
-    alias create_post_data create_trade_info
 
     # mpg
     def self.create_trade_sha(trade_info, key = HASH_KEY, iv = HASH_IV)
@@ -25,7 +24,6 @@ module Newebpay
     def self.decrypt_trade_info(trade_info, key = HASH_KEY, iv = HASH_IV)
       Oj.load(decrypt(key, iv, trade_info))
     end
-    alias decrypt_period decrypt_trade_info
 
     # donation, cancel_auth
     def self.create_check_value(attrs, key = HASH_KEY, iv = HASH_IV)
@@ -33,7 +31,6 @@ module Newebpay
       encode_string = "HashKey=#{key}&#{encode_attrs}&HashIV=#{iv}"
       Digest::SHA256.hexdigest(encode_string).upcase
     end
-    alias expect_check_code create_check_value
 
     # query_trade
     def self.query_check_value(attrs, key = HASH_KEY, iv = HASH_IV)
