@@ -4,7 +4,7 @@ module Newebpay::QueryTrade
   class Search
     REQUIRED_ATTRS = %i[order_number price].freeze
     SLICE_ATTRS = %w[Amt MerchantID MerchantOrderNo]
-    attr_accessor :attrs, :merchant_id, :response
+    attr_accessor :attrs, :merchant_id
     def initialize(options)
       check_valid(options)
       @attrs = {}
@@ -13,12 +13,12 @@ module Newebpay::QueryTrade
     end
 
     def call
-      result = HTTP.post(Newebpay.config.query_trade_url, form: attrs).body.to_s
-      @response = Response.new(result)
+      result = HTTP.post(Newebpay.config.query_trade_url, form: @attrs).body.to_s
+      Response.new(result)
     end
 
     def check_value
-      @check_value ||= Newebpay::Helpers.query_check_value(attrs.slice(*SLICE_ATTRS))
+      @check_value ||= Newebpay::Helpers.query_check_value(@attrs.slice(*SLICE_ATTRS))
     end
 
     def version

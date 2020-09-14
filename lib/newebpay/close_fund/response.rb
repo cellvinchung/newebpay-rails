@@ -9,7 +9,6 @@ module Newebpay::CloseFund
 
       @status = response_data['Status']
       @message = response_data['Message']
-
       @result = response_data['Result']
 
       @result.each do |key, values|

@@ -10,14 +10,11 @@ module Newebpay::CloseFund
       @attrs = {}
       @merchant_id = options[:merchant_id] || Newebpay.config.merchant_id
       parse_attr(options)
+    end
 
-      @attrs['Version'] = version
-      @attrs['TimeStamp'] = Time.now.to_i
-      @attrs['RespondType'] = 'JSON'
-      @attrs['CloseType'] = close_type
-
+    def call
       result = HTTP.post(Newebpay.config.close_fund_url, form: form_attrs).body.to_s
-      @response = Response.new(result)
+      Response.new(result)
     end
 
     def form_attrs
@@ -38,15 +35,19 @@ module Newebpay::CloseFund
     private
 
     def parse_attr(options)
-      attrs['Amt'] = options[:price]
-      attrs['IndexType'] = options[:number_type] || '1'
-      attrs['Cancel'] = '1' if options[:cancel]
+      @attrs['Version'] = version
+      @attrs['TimeStamp'] = Time.now.to_i
+      @attrs['RespondType'] = 'JSON'
+      @attrs['CloseType'] = close_type
+      @attrs['Amt'] = options[:price]
+      @attrs['IndexType'] = options[:number_type] || '1'
+      @attrs['Cancel'] = '1' if options[:cancel]
 
       case attrs['IndexType'].to_s
       when '1'
-        attrs['MerchantOrderNo'] = options[:order_number]
+        @attrs['MerchantOrderNo'] = options[:order_number]
       when '2'
-        attrs['TradeNo'] = options[:order_number]
+        @attrs['TradeNo'] = options[:order_number]
       else
         raise ArgumentError, "Invalid number_type: #{options[:number_type]}"
       end

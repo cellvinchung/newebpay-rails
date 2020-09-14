@@ -2,8 +2,8 @@
 
 module Newebpay::CancelAuth
   class Response
-    SLICE_ATTRS = %w[Amt MerchantID MerchantOrderNo TradeNo]
-    attr_reader :status, :message
+    SLICE_ATTRS = %w[Amt MerchantID MerchantOrderNo TradeNo].freeze
+    attr_reader :status, :message, :result
 
     def initialize(response_params)
       response_data = Oj.load(response_params)
