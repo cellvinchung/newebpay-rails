@@ -44,7 +44,7 @@ module Newebpay::CancelAuth
     def parse_attr(options)
       attrs['Amt'] = options[:price]
       attrs['IndexType'] = options[:number_type] || '1'
-      attrs['NotifyURL'] = Newebpay::Engine.routes.url_helpers.cancel_auth_notify_callbacks_url(host: Newebpay.host) if  Newebpay.config.cancel_auth_notify_callback
+      attrs['NotifyURL'] = Newebpay::Engine.routes.url_helpers.cancel_auth_notify_callbacks_url(host: Newebpay.host, protocol: Newebpay.protocol) if  Newebpay.config.cancel_auth_notify_callback
 
       case attrs['IndexType'].to_s
       when '1'

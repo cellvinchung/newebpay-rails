@@ -56,7 +56,7 @@ module Newebpay::Donation
       attrs['ReceiptTitle'] = options[:receipt_name]
       attrs['PaymentReceiptAddress'] = options[:receipt_address]
       attrs['ReturnURL'] = options[:return_url]
-      attrs['NotifyURL'] = Newebpay::Engine.routes.url_helpers.donation_notify_callbacks_url(host: Newebpay.host) if Newebpay.config.donation_notify_callback
+      attrs['NotifyURL'] = Newebpay::Engine.routes.url_helpers.donation_notify_callbacks_url(host: Newebpay.host, protocol: Newebpay.protocol) if Newebpay.config.donation_notify_callback
 
       options[:payment_methods].each do |payment_method|
         attrs[payment_method.to_s.upcase] = 'on'

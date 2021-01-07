@@ -58,9 +58,9 @@ module Newebpay::MPG
       attrs[:OrderComment] = options[:comment]
       attrs[:EmailModify] = options[:email_editable] ? '1' : '0'
       attrs[:InstFlag] = options[:inst_flag]
-      attrs[:ReturnURL] = Newebpay::Engine.routes.url_helpers.mpg_callbacks_url(host: Newebpay.host)
-      attrs[:CustomerURL] = Newebpay::Engine.routes.url_helpers.payment_code_callbacks_url(host: Newebpay.host) if Newebpay.config.payment_code_callback
-      attrs[:NotifyURL] = Newebpay::Engine.routes.url_helpers.notify_callbacks_url(host: Newebpay.host) if Newebpay.config.notify_callback
+      attrs[:ReturnURL] = Newebpay::Engine.routes.url_helpers.mpg_callbacks_url(host: Newebpay.host, protocol: Newebpay.protocol)
+      attrs[:CustomerURL] = Newebpay::Engine.routes.url_helpers.payment_code_callbacks_url(host: Newebpay.host, protocol: Newebpay.protocol) if Newebpay.config.payment_code_callback
+      attrs[:NotifyURL] = Newebpay::Engine.routes.url_helpers.notify_callbacks_url(host: Newebpay.host, protocol: Newebpay.protocol) if Newebpay.config.notify_callback
 
       options[:payment_methods].each do |payment_method|
         if payment_method == :credit_red
