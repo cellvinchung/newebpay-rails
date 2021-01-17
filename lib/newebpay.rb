@@ -28,6 +28,10 @@ module Newebpay
     @host ||= ::Rails.application.routes.default_url_options[:host]
   end
 
+  def self.protocol
+    @protocol ||= ::Rails.application.routes.default_url_options[:protocol]
+  end
+
   def self.configure
     yield config
   end

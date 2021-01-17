@@ -53,8 +53,8 @@ module Newebpay::Periodical
       attrs[:EmailModify] = options[:email_editable] || '0'
       attrs[:LangType] = options[:locale] || 'zh-tw'
       attrs[:BackURL] = options[:cancel_url]
-      attrs[:ReturnURL] = Newebpay::Engine.routes.url_helpers.periodical_callbacks_url(host: Newebpay.host) if  Newebpay.config.periodical_callback
-      attrs[:NotifyURL] = Newebpay::Engine.routes.url_helpers.periodical_notify_callbacks_url(host: Newebpay.host) if  Newebpay.config.periodical_notify_callback
+      attrs[:ReturnURL] = Newebpay::Engine.routes.url_helpers.periodical_callbacks_url(host: Newebpay.host, protocol: Newebpay.protocol) if  Newebpay.config.periodical_callback
+      attrs[:NotifyURL] = Newebpay::Engine.routes.url_helpers.periodical_notify_callbacks_url(host: Newebpay.host, protocol: Newebpay.protocol) if  Newebpay.config.periodical_notify_callback
 
       options[:period_type] ||= :monthly
       case options[:period_type]
